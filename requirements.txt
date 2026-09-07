@@ -1,0 +1,12 @@
+langgraph
+langchain
+langchain-core
+pydantic
+python-dotenv
+twelvedata
+pydantic-settings
+tavily-python
+finnhub-python
+langsmith
+langchain-google-genai
+streamlit
