@@ -1,4 +1,3 @@
-from langchain_core.prompts import prompt
 from models.state import ResearchState
 from models.report import ResearchReport
 from llm.client import llm
@@ -33,6 +32,9 @@ def syntesize_report(state: ResearchState) -> dict:
     IMPACT ANALYSIS:
     {state.analysis}
 
+    MOVEMENT ANALYSIS:
+    {state.movement_analysis}
+
     EXTRACTED CLAIMS:
     {state.claims}
 
@@ -63,7 +65,13 @@ def syntesize_report(state: ResearchState) -> dict:
     9. Preserve important numerical information where relevant.
 
     10. Include the supplied source URLs associated with claims
-        and news events. Do not invent URLs.
+    and news events. Do not invent URLs.
+    
+    11. If MOVEMENT ANALYSIS is provided, incorporate its findings
+    into the report, especially when the user's query asks
+    about a stock price movement. Preserve its uncertainty
+    and do not strengthen tentative explanations into
+    unsupported causal claims.
 
     Structure the report around:
 

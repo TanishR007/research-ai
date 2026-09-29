@@ -79,6 +79,46 @@ if st.button("Research", type="primary"):
             "Volume",
             f"{market.volume:,}",
         )
+    if result.movement_analysis:
+
+        movement = result.movement_analysis
+
+        st.divider()
+
+        st.header("📊 Market Movement Analysis")
+
+        st.write(movement.answer)
+
+        if movement.contributing_factors:
+
+            st.subheader("Contributing Factors")
+
+            for factor in movement.contributing_factors:
+                st.markdown(f"- {factor}")
+
+
+        if movement.supporting_evidence:
+
+            st.subheader("Supporting Evidence")
+
+            for evidence in movement.supporting_evidence:
+                st.markdown(f"- {evidence}")
+
+
+        if movement.uncertainties:
+
+            st.subheader("Uncertainties")
+
+            for uncertainty in movement.uncertainties:
+                st.markdown(f"- {uncertainty}")
+
+
+        if movement.sources:
+
+            st.subheader("Sources")
+
+            for source in movement.sources:
+                st.markdown(f"- {source}")
 
 
     if result.perspective:

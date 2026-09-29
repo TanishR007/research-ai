@@ -1,9 +1,25 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import BaseModel
+
 from models.company import CompanyIdentity, AssetType
 from models.state import ResearchState
 from tools.market_api import MarketAPI
 
 
 market_api = MarketAPI()
+
+
+class TickerExtraction(BaseModel):
+    company_query: str
+
+
+def create_ticker_extractor():
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-3.5-flash-lite",
+        temperature=0,
+    )
+
+    return llm.with_structured_output(TickerExtraction)
 
 
 def resolve_ticker(state: ResearchState) -> dict:
@@ -15,16 +31,61 @@ def resolve_ticker(state: ResearchState) -> dict:
         }
 
     try:
-        results = market_api.search_symbol(query)
+        extractor = create_ticker_extractor()
+
+        extraction_prompt = f"""
+        Extract the company or stock ticker that the user is asking
+        about.
+
+        USER QUERY:
+        {query}
+
+        Examples:
+
+        "Why did NVDA fall today?"
+        -> NVDA
+
+        "Why is Apple down?"
+        -> Apple
+
+        "Why did Microsoft stock jump?"
+        -> Microsoft
+
+        "Give me a research report on AAPL"
+        -> AAPL
+
+        "What is happening with Nvidia?"
+        -> Nvidia
+
+        Return only the company or ticker that should be searched
+        in a financial market symbol database.
+
+        Do not answer the user's question.
+        Do not provide an explanation.
+        """
+
+        extraction = extractor.invoke(extraction_prompt)
+
+        company_query = extraction.company_query.strip()
+
+        if not company_query:
+            return {
+                "errors": [
+                    f"Unable to extract company from query: {query}"
+                ]
+            }
+
+
+        results = market_api.search_symbol(company_query)
 
         if not results:
             return {
                 "errors": [
-                    f"Unable to resolve company: {query}"
+                    f"Unable to resolve company: {company_query}"
                 ]
             }
 
-        normalized_query = query.upper()
+        normalized_query = company_query.upper()
 
         exact_matches = [
             result
@@ -53,6 +114,10 @@ def resolve_ticker(state: ResearchState) -> dict:
 
         if us_candidates:
             candidates = us_candidates
+
+        # ---------------------------------------------------------
+        # Step 5: Build CompanyIdentity
+        # ---------------------------------------------------------
 
         candidate = candidates[0]
 

@@ -8,6 +8,7 @@ from models.financials import FinancialData
 from models.analysis import ImpactAnalysis, NewsEvent
 from models.evidence import Claim
 from models.report import ResearchReport, StockPerspective
+from models.movement import MovementAnalysis
 
 class ResearchState(BaseModel):
     query: str
@@ -17,6 +18,7 @@ class ResearchState(BaseModel):
     news_events: list[NewsEvent] = Field(default_factory=list)
     financial_data: FinancialData | None = None
     analysis: ImpactAnalysis | None = None
+    movement_analysis: MovementAnalysis | None = None
     claims: list[Claim] = Field(default_factory=list)
     report: ResearchReport | None = None
     perspective: StockPerspective | None = None
