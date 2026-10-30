@@ -4,5 +4,5 @@ from config.settings import settings
 llm = ChatGoogleGenerativeAI(
     model="gemini-3.5-flash-lite",
     temperature=0,
-    api_key=settings.gemini_api_key,
+    api_key=settings.gemini_api_key or "placeholder_key",
 )

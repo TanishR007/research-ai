@@ -10,3 +10,4 @@ finnhub-python
 langsmith
 langchain-google-genai
 streamlit
+plotly>=6.0.0
